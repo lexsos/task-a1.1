@@ -61,12 +61,96 @@ void freeContext(TContext& context){
         delete context.out;
 }
 
+const int defaultVal = 1;
+
+class TFraction {
+
+  public:
+    TFraction();
+    TFraction(int numerator, int denominator);
+
+    int getNumerator() const;
+    void setNumerator(int numerator);
+
+    int getDenominator() const;
+    void setDenominator(int denominator);
+
+    const TFraction operator+(const TFraction& rv) const;
+    const TFraction operator-(const TFraction& rv) const;
+    const TFraction operator*(const TFraction& rv) const;
+    const TFraction operator/(const TFraction& rv) const;
+
+  private:
+    int numerator;
+    int denominator;
+};
+
+
+TFraction::TFraction(){
+
+    numerator = defaultVal;
+    denominator = defaultVal;
+}
+
+TFraction::TFraction(int numerator, int denominator){
+
+    this->numerator = numerator;
+    this->denominator = denominator;
+}
+
+
+int TFraction::getNumerator() const{
+
+    return numerator;
+}
+
+void TFraction::setNumerator(int numerator){
+
+    this->numerator = numerator;
+}
+
+int TFraction::getDenominator() const{
+
+    return denominator;
+}
+
+void TFraction::setDenominator(int denominator){
+
+    this->denominator = denominator;
+}
+
+
+const TFraction TFraction::operator*(const TFraction& rv) const{
+
+    return TFraction(this->numerator*rv.numerator,
+                     this->denominator*rv.denominator);
+}
+
+const TFraction TFraction::operator/(const TFraction& rv) const{
+
+    return TFraction(this->numerator*rv.denominator,
+                     this->denominator*rv.numerator);
+}
+
+ostream& operator<<( ostream& out, const TFraction& fraction){
+
+    out << fraction.getNumerator() << "/" << fraction.getDenominator();
+    return out;
+}
+
+
 int main( int argc, const char* argv[] )
 {
     TContext context;
     prepareContext(context, argc, argv);
     int i;
     *context.in >> i;
-    *context.out << i;
+    *context.out << i << endl;
+
+    TFraction a, b(1, 2);
+    *context.out << a << endl;
+    *context.out << b*b << endl;
+    *context.out << b/b << endl;
+
     freeContext(context);
 }
