@@ -6,60 +6,85 @@ using namespace std;
 char helpStr[] = "Usage: \n" \
     "    taska11 infile [outfile] \n";
 
-void printHelp(){
-    cout << helpStr;
-}
+class TContext {
 
-istream* openInFile(const char* fileName){
+  public:
+    TContext(int argc, const char* argv[]);
+    ~TContext();
 
-    ifstream *in = new ifstream(fileName);
-    if (!in->is_open()){
-        delete in;
-        return NULL;
-    }
+    istream* getIn();
+    ostream* getOut();
+
+  private:
+    istream *in;
+    ostream *out;
+
+    void printHelp();
+    void openInFile(const char* fileName);
+    void openOutFile(const char* fileName);
+};
+
+istream* TContext::getIn(){
+
     return in;
 }
 
-ostream* openOutFile(const char* fileName){
+ostream* TContext::getOut(){
 
-    ofstream *out = new ofstream(fileName);
-    if (!out->is_open()){
-        delete out;
-        return NULL;
-    }
     return out;
 }
 
-struct TContext {
-    istream *in;
-    ostream *out;
-};
+TContext::~TContext(){
 
-void prepareContext(TContext& context, int argc, const char* argv[]){
-    context.out = &cout;
+    delete in;
+    if (out != &cout)
+        delete out;
+}
+
+TContext::TContext(int argc, const char* argv[]){
+
     if  (argc != 2 && argc != 3){
         printHelp();
         exit(0);
     }
-    context.in = openInFile(argv[1]);
-    if (!context.in){
-        cout << "Can't open file: " << argv[1] << endl;
-        exit(1);
-    }
+
+    openInFile(argv[1]);
     if (argc >= 3)
-        context.out = openOutFile(argv[2]);
-    if (!context.out){
-        cout << "Can't open file: " << argv[2] << endl;
-        delete context.in;
-        exit(1);
-    }
+        openOutFile(argv[2]);
+    else
+        out = &cout;
 }
 
-void freeContext(TContext& context){
-    delete context.in;
-    if (context.out != &cout)
-        delete context.out;
+void TContext::printHelp(){
+    cout << helpStr;
 }
+
+void TContext::openInFile(const char* fileName){
+
+    ifstream *in = new ifstream(fileName);
+    if (in->is_open()){
+        this->in = in;
+        return;
+    }
+
+    delete in;
+    cout << "Can't open file: " << fileName << endl;
+    exit(1);
+}
+
+void TContext::openOutFile(const char* fileName){
+
+    ofstream *out = new ofstream(fileName);
+    if (out->is_open()){
+        this->out = out;
+        return;
+    }
+
+    delete out;
+    cout << "Can't open file: " << fileName << endl;
+    exit(1);
+}
+
 
 int getNOD(int a, int b){
     while (b != 0) {
@@ -222,22 +247,23 @@ ostream& operator<<( ostream& out, const TFraction& fraction){
 
 int main( int argc, const char* argv[] )
 {
-    TContext context;
-    prepareContext(context, argc, argv);
+    TContext context(argc, argv);
+    istream *in = context.getIn();
+    ostream *out = context.getOut();
+
     int i;
-    *context.in >> i;
-    *context.out << i << endl;
+    *in >> i;
+    *out << i << endl;
 
     TFraction a, b(1, 2), c(4, 2);
-    *context.out << a << endl;
-    *context.out << b*b << endl;
-    *context.out << (b/b).simplify() << endl;
-    *context.out << (b+b).simplify() << endl;
-    *context.out << (b-b).simplify() << endl;
-    *context.out << (TFraction(1, 2) == TFraction(2, 4))  << endl;
-    *context.out << (TFraction(1, 3) != TFraction(2, 4))  << endl;
-    *context.out << (TFraction(1, 3) < TFraction(2, 4))  << endl;
-    *context.out << (TFraction(6, 3) > TFraction(2, 4))  << endl;
-    *context.out << c.getIntPart() << " " << c.getFractPart()  << endl;
-    freeContext(context);
+    *out << a << endl;
+    *out << b*b << endl;
+    *out << (b/b).simplify() << endl;
+    *out << (b+b).simplify() << endl;
+    *out << (b-b).simplify() << endl;
+    *out << (TFraction(1, 2) == TFraction(2, 4))  << endl;
+    *out << (TFraction(1, 3) != TFraction(2, 4))  << endl;
+    *out << (TFraction(1, 3) < TFraction(2, 4))  << endl;
+    *out << (TFraction(6, 3) > TFraction(2, 4))  << endl;
+    *out << c.getIntPart() << " " << c.getFractPart()  << endl;
 }
