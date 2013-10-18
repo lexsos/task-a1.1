@@ -3,8 +3,12 @@
 #include <stdlib.h>
 using namespace std;
 
-char helpStr[] = "Usage: \n" \
+
+const char helpStr[] = "Usage: \n" \
     "    taska11 infile [outfile] \n";
+
+const int defaultVal = 1;
+
 
 class TContext {
 
@@ -95,7 +99,6 @@ int getNOD(int a, int b){
     return a;
 }
 
-const int defaultVal = 1;
 
 class TFraction {
 
@@ -167,14 +170,14 @@ void TFraction::setDenominator(int denominator){
 
 int TFraction::getIntPart() const{
 
-    return this->numerator/this->denominator;
+    return numerator/denominator;
 }
 
 const TFraction TFraction::getFractPart() const{
 
-    int intPart = this->getIntPart();
-    return TFraction(this->numerator - this->denominator*intPart,
-                     this->denominator);
+    int intPart = getIntPart();
+    return TFraction(numerator - denominator*intPart,
+                     denominator);
 }
 
 const TFraction TFraction::operator+(const TFraction& rv) const{
@@ -196,46 +199,46 @@ const TFraction TFraction::operator-(const TFraction& rv) const{
 
 const TFraction TFraction::operator*(const TFraction& rv) const{
 
-    return TFraction(this->numerator*rv.numerator,
-                     this->denominator*rv.denominator);
+    return TFraction(numerator*rv.numerator,
+                     denominator*rv.denominator);
 }
 
 const TFraction TFraction::operator/(const TFraction& rv) const{
 
-    return TFraction(this->numerator*rv.denominator,
-                     this->denominator*rv.numerator);
+    return TFraction(numerator*rv.denominator,
+                     denominator*rv.numerator);
 }
 
 
 int TFraction::cmp(const TFraction& rv) const{
 
-    return this->numerator*rv.denominator - rv.numerator* this->denominator;
+    return numerator*rv.denominator - rv.numerator*denominator;
 }
 
 bool TFraction::operator>(const TFraction& rv) const{
 
-    return this->cmp(rv) > 0;
+    return cmp(rv) > 0;
 }
 
 bool TFraction::operator<(const TFraction& rv) const{
 
-    return this->cmp(rv) < 0;
+    return cmp(rv) < 0;
 }
 
 bool TFraction::operator==(const TFraction& rv) const{
 
-    return this->cmp(rv) == 0;
+    return cmp(rv) == 0;
 }
 
 bool TFraction::operator!=(const TFraction& rv) const{
 
-    return this->cmp(rv) != 0;
+    return cmp(rv) != 0;
 }
 
 const TFraction TFraction::simplify() const{
 
-    int nod = getNOD(this->numerator, this->denominator);
-    return TFraction(this->numerator/nod, this->denominator/nod);
+    int nod = getNOD(numerator, denominator);
+    return TFraction(numerator/nod, denominator/nod);
 }
 
 ostream& operator<<( ostream& out, const TFraction& fraction){
