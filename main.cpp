@@ -61,6 +61,15 @@ void freeContext(TContext& context){
         delete context.out;
 }
 
+int getNOD(int a, int b){
+    while (b != 0) {
+        int r = a % b;
+        a = b;
+        b = r;
+    }
+    return a;
+}
+
 const int defaultVal = 1;
 
 class TFraction {
@@ -75,16 +84,26 @@ class TFraction {
     int getDenominator() const;
     void setDenominator(int denominator);
 
+    int getIntPart() const;
+    const TFraction getFractPart() const;
+
     const TFraction operator+(const TFraction& rv) const;
     const TFraction operator-(const TFraction& rv) const;
     const TFraction operator*(const TFraction& rv) const;
     const TFraction operator/(const TFraction& rv) const;
+
+    bool operator>(const TFraction& rv) const;
+    bool operator<(const TFraction& rv) const;
+    bool operator==(const TFraction& rv) const;
+    bool operator!=(const TFraction& rv) const;
 
     const TFraction simplify() const;
 
   private:
     int numerator;
     int denominator;
+
+    int cmp(const TFraction& rv) const;
 };
 
 
@@ -121,6 +140,18 @@ void TFraction::setDenominator(int denominator){
     this->denominator = denominator;
 }
 
+int TFraction::getIntPart() const{
+
+    return this->numerator/this->denominator;
+}
+
+const TFraction TFraction::getFractPart() const{
+
+    int intPart = this->getIntPart();
+    return TFraction(this->numerator - this->denominator*intPart,
+                     this->denominator);
+}
+
 const TFraction TFraction::operator+(const TFraction& rv) const{
 
     int numerator, denominator;
@@ -150,9 +181,36 @@ const TFraction TFraction::operator/(const TFraction& rv) const{
                      this->denominator*rv.numerator);
 }
 
+
+int TFraction::cmp(const TFraction& rv) const{
+
+    return this->numerator*rv.denominator - rv.numerator* this->denominator;
+}
+
+bool TFraction::operator>(const TFraction& rv) const{
+
+    return this->cmp(rv) > 0;
+}
+
+bool TFraction::operator<(const TFraction& rv) const{
+
+    return this->cmp(rv) < 0;
+}
+
+bool TFraction::operator==(const TFraction& rv) const{
+
+    return this->cmp(rv) == 0;
+}
+
+bool TFraction::operator!=(const TFraction& rv) const{
+
+    return this->cmp(rv) != 0;
+}
+
 const TFraction TFraction::simplify() const{
-    //TODO:
-    return TFraction();
+
+    int nod = getNOD(this->numerator, this->denominator);
+    return TFraction(this->numerator/nod, this->denominator/nod);
 }
 
 ostream& operator<<( ostream& out, const TFraction& fraction){
@@ -170,12 +228,16 @@ int main( int argc, const char* argv[] )
     *context.in >> i;
     *context.out << i << endl;
 
-    TFraction a, b(1, 2);
+    TFraction a, b(1, 2), c(4, 2);
     *context.out << a << endl;
     *context.out << b*b << endl;
-    *context.out << b/b << endl;
-    *context.out << b+b << endl;
-    *context.out << b-b << endl;
-
+    *context.out << (b/b).simplify() << endl;
+    *context.out << (b+b).simplify() << endl;
+    *context.out << (b-b).simplify() << endl;
+    *context.out << (TFraction(1, 2) == TFraction(2, 4))  << endl;
+    *context.out << (TFraction(1, 3) != TFraction(2, 4))  << endl;
+    *context.out << (TFraction(1, 3) < TFraction(2, 4))  << endl;
+    *context.out << (TFraction(6, 3) > TFraction(2, 4))  << endl;
+    *context.out << c.getIntPart() << " " << c.getFractPart()  << endl;
     freeContext(context);
 }
