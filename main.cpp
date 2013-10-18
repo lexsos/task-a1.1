@@ -80,6 +80,8 @@ class TFraction {
     const TFraction operator*(const TFraction& rv) const;
     const TFraction operator/(const TFraction& rv) const;
 
+    const TFraction simplify() const;
+
   private:
     int numerator;
     int denominator;
@@ -119,6 +121,22 @@ void TFraction::setDenominator(int denominator){
     this->denominator = denominator;
 }
 
+const TFraction TFraction::operator+(const TFraction& rv) const{
+
+    int numerator, denominator;
+    numerator = this->numerator*rv.denominator +
+                this->denominator*rv.numerator;
+    denominator = this->denominator*rv.denominator;
+    return TFraction(numerator, denominator);
+}
+
+const TFraction TFraction::operator-(const TFraction& rv) const{
+    int numerator, denominator;
+    numerator = this->numerator*rv.denominator -
+                this->denominator*rv.numerator;
+    denominator = this->denominator*rv.denominator;
+    return TFraction(numerator, denominator);
+}
 
 const TFraction TFraction::operator*(const TFraction& rv) const{
 
@@ -130,6 +148,11 @@ const TFraction TFraction::operator/(const TFraction& rv) const{
 
     return TFraction(this->numerator*rv.denominator,
                      this->denominator*rv.numerator);
+}
+
+const TFraction TFraction::simplify() const{
+    //TODO:
+    return TFraction();
 }
 
 ostream& operator<<( ostream& out, const TFraction& fraction){
@@ -151,6 +174,8 @@ int main( int argc, const char* argv[] )
     *context.out << a << endl;
     *context.out << b*b << endl;
     *context.out << b/b << endl;
+    *context.out << b+b << endl;
+    *context.out << b-b << endl;
 
     freeContext(context);
 }
