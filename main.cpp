@@ -66,6 +66,7 @@ void TContext::printHelp(){
 void TContext::openInFile(const char* fileName){
 
     ifstream *in = new ifstream(fileName);
+    in->exceptions ( ifstream::failbit | ifstream::badbit );
     if (in->is_open()){
         this->in = in;
         return;
@@ -247,6 +248,20 @@ ostream& operator<<( ostream& out, const TFraction& fraction){
     return out;
 }
 
+istream& operator>>( istream& in, TFraction& fraction){
+
+    int numerator, denominator;
+    try{
+        in >> numerator >> denominator;
+    }
+    catch(...){
+        cout << "Incorrect input data" << endl;
+        exit(1);
+    }
+    fraction.setNumerator(numerator);
+    fraction.setDenominator(denominator);
+    return in;
+}
 
 int main( int argc, const char* argv[] )
 {
@@ -254,19 +269,23 @@ int main( int argc, const char* argv[] )
     istream *in = context.getIn();
     ostream *out = context.getOut();
 
-    int i;
-    *in >> i;
-    *out << i << endl;
+    TFraction min, max, sum, current;
 
-    TFraction a, b(1, 2), c(4, 2);
-    *out << a << endl;
-    *out << b*b << endl;
-    *out << (b/b).simplify() << endl;
-    *out << (b+b).simplify() << endl;
-    *out << (b-b).simplify() << endl;
-    *out << (TFraction(1, 2) == TFraction(2, 4))  << endl;
-    *out << (TFraction(1, 3) != TFraction(2, 4))  << endl;
-    *out << (TFraction(1, 3) < TFraction(2, 4))  << endl;
-    *out << (TFraction(6, 3) > TFraction(2, 4))  << endl;
-    *out << c.getIntPart() << " " << c.getFractPart()  << endl;
+    *in >> current;
+    min = current;
+    max = current;
+    sum = current;
+
+    while(!in->eof()){
+        *in >> current;
+        sum = sum + current;
+        if (current > max)
+            max = current;
+        if (current < min)
+            min = current;
+    }
+
+    *out << "Min: " << min.simplify() << endl;
+    *out << "Max: " << max.simplify() << endl;
+    *out << "Sum: " << sum.getIntPart() << " " << sum.getFractPart().simplify() << endl;
 }
