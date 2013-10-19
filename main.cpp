@@ -269,6 +269,9 @@ int main( int argc, const char* argv[] )
     istream *in = context.getIn();
     ostream *out = context.getOut();
 
+    TFraction a, b;
+    *out << "a-b=" << a-b << endl;
+
     TFraction min, max, sum, current;
 
     *in >> current;
